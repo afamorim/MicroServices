@@ -1,0 +1,56 @@
+
+buildscript {
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.1.5.RELEASE"
+        classpath 'io.swagger.codegen.v3:swagger-codegen-cli:3.0.5'
+    }
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+import io.swagger.codegen.config.CodegenConfigurator
+import io.swagger.codegen.DefaultGenerator
+
+def swaggerOutPutDir = 'build/gen-code'
+def swaggerInputFile = file('src/main/resources/templates/swagger.yaml');
+def swaggerInputDir = file('src/main/resources/templates/');
+
+task generateServer{
+    inputs.file('src/main/resources/templates/swagger.yaml')
+    outputs.dir('buiçd/code-gen')
+    doLast {
+        def config = new CodegenConfigurator()
+        //config.setInputSpec('src/main/resources/templates/swagger.yaml')
+        config.setInputSpec(swaggerInputDir.path + '/swagger.yaml')
+        config.setOutputDir(swaggerOutPutDir)
+        config.setLang('spring')
+        config.setLibrary('spring-boot')
+        config.setModelNameSuffix('Representation')
+        config.setAdditionalProperties([
+                'invokerPackage': 'br.com.vortice.microservicos.testBackEnd.swagger',
+                'modelPackage': 'br.com.vortice.microservicos.testBackEnd.swagger.representation',
+                'apiPackage': 'br.com.vortice.microservicos.testBackEnd.swagger.api',
+                'dateLibrary': 'java8',
+                'interfaceOnly': 'trye',
+                'delegatePattern': 'true'
+        ])
+        new DefaultGenerator().opts(config.toClientOptInput()).generate()
+    }
+}
+
+clean.doFirst{
+    delete(file(swaggerOutPutDir))
+}
+
+configurations {
+    swagger
+}
+
+sourceSets.main.java.srcDir new File(swaggerOutPutDir + '/src/main/java')
+idea {
+    module {
+        generatedSourceDirs += file(swaggerOutPutDir + '/src/main/java')
+    }
+}
