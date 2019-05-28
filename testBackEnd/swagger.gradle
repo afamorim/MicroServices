@@ -14,16 +14,17 @@ import io.swagger.codegen.config.CodegenConfigurator
 import io.swagger.codegen.DefaultGenerator
 
 def swaggerOutPutDir = 'build/gen-code'
-def swaggerInputFile = file('src/main/resources/templates/swagger.yaml');
+def swaggerInputFile = file('src/main/resources/templates/swagger_pet.yaml');
 def swaggerInputDir = file('src/main/resources/templates/');
 
 task generateServer{
-    inputs.file('src/main/resources/templates/swagger.yaml')
+
+    inputs.file('src/main/resources/templates/swagger_pet.yaml')
     outputs.dir('buiçd/code-gen')
     doLast {
         def config = new CodegenConfigurator()
         //config.setInputSpec('src/main/resources/templates/swagger.yaml')
-        config.setInputSpec(swaggerInputDir.path + '/swagger.yaml')
+        config.setInputSpec(swaggerInputDir.path + '/swagger_pet.yaml')
         config.setOutputDir(swaggerOutPutDir)
         config.setLang('spring')
         config.setLibrary('spring-boot')
